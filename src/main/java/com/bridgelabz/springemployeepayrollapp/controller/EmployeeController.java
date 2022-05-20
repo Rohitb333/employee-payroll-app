@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/employee")
 public class EmployeeController {
@@ -17,41 +19,39 @@ public class EmployeeController {
 
     @GetMapping("/hello")
     public String sayHello(){
+
         return "Welcome to employee payroll app";
     }
 
+
     @PostMapping("/add")
-    public ResponseEntity<ResponseDTO> addEmployee(@RequestBody EmployeeDTO employeeDTO){
+    public ResponseEntity<ResponseDTO> addEmployee(@Valid @RequestBody EmployeeDTO employeeDTO){
         Employee newEmployee = new Employee(employeeDTO);
-        iEmployeeInterface.addEmployee(newEmployee);
-        ResponseDTO responseDTO = new ResponseDTO("Get Call Success", iEmployeeInterface.addEmployee(newEmployee));
-        return new ResponseEntity<>(responseDTO,HttpStatus.CREATED);
+        ResponseDTO responseDTO = new ResponseDTO("Add record successfully", iEmployeeInterface.addEmployee(newEmployee));
+        return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.CREATED);
     }
 
-    @GetMapping("/search/{id}")
+    @GetMapping("/search-by/{id}")
     public ResponseEntity<ResponseDTO> searchById(@PathVariable int id){
-
-        ResponseDTO responseDTO = new ResponseDTO("Get Call Success", iEmployeeInterface.searchById(id));
-        return new ResponseEntity<>(responseDTO,HttpStatus.CREATED);
+        ResponseDTO responseDTO = new ResponseDTO("Record found successfully", iEmployeeInterface.searchById(id));
+        return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.CREATED);
     }
 
-
-    @GetMapping("/show")
+    @GetMapping("/show-all")
     public ResponseEntity<ResponseDTO> searchAll(){
-        ResponseDTO responseDTO = new ResponseDTO("Get Call Success", iEmployeeInterface.searchAll());
-        return new ResponseEntity<>(responseDTO,HttpStatus.OK);
+        ResponseDTO responseDTO = new ResponseDTO("Getting all the record.", iEmployeeInterface.searchAll());
+        return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
+    }
+    @PutMapping("/edit-by/{id}")
+    public ResponseEntity<ResponseDTO> editById(@PathVariable int id,@Valid @RequestBody EmployeeDTO employeeDTO){
+        ResponseDTO responseDTO = new ResponseDTO("Update successfully", iEmployeeInterface.editById(id,employeeDTO));
+        return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
     }
 
-
-    @PutMapping("/edit/{id}")
-    public ResponseEntity<ResponseDTO> editById(@PathVariable int id, @RequestBody EmployeeDTO employeeDTO){
-        ResponseDTO responseDTO = new ResponseDTO("Get Call Success", iEmployeeInterface.editById(id,employeeDTO));
-        return new ResponseEntity<>(responseDTO,HttpStatus.OK);
-    }
-
-    @DeleteMapping("/remove/{id}")
+    @DeleteMapping("/remove-by/{id}")
     public ResponseEntity<ResponseDTO> removeById(@PathVariable int id) {
-        ResponseDTO responseDTO = new ResponseDTO("Get Call Success", iEmployeeInterface.removeById(id));
-        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+        Employee employee = new Employee(id);
+        ResponseDTO responseDTO = new ResponseDTO("Record found and removed successfully", iEmployeeInterface.removeById(id));
+        return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
     }
 }
